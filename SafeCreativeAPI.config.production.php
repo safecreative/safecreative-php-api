@@ -1,0 +1,10 @@
+<?php
+//ENDPOINTS:
+define("API_URL","http://api.safecreative.org");
+define("API_SEARCH_URL","http://api-search.safecreative.org");
+//KEYS:
+define("PRIVATE_KEY","");
+define("SHARED_KEY","");
+define("AUTH_PRIVATE_KEY","");
+define("AUTH_KEY","");
+?>

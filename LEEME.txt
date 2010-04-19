@@ -1,0 +1,149 @@
+WRAPPER DE API SAFE CREATIVE PARA PHP
+-------------------------------------
+
+Este archivo contiene un wrapper sencillo para llamar a la API de Safe Creative API desde PHP.
+
+CONTENIDO
+---------
+
+- LEEME.TXT
+  Este fichero.
+  
+- README.TXT
+  Este fichero, en inglés
+
+- LICENSE.TXT
+  Texto de la licencia GPL 3.0
+
+- SafeCreativeAPI.inc.php
+  El wrapper en sí.
+  Debes incluir este fichero en tu código PHP antes de usar cualquiera de sus métodos
+
+- SafeCreativeAPI.config.arena.php
+  Valores de configuración para utilizar el servidor API de pruebas "arena"
+  Debes incluir este fichero antes de incluir SafeCreativeAPI.inc.php
+
+- SafeCreativeAPI.config.production.php
+  Valores de configuración para utilizar el servidor API de producción
+  Debes incluir este fichero antes de incluir SafeCreativeAPI.inc.php
+
+- simple.register.php
+  Código de ejemplo para registrar una obra
+  
+- simple.search.php
+  Código de ejemplo para buscar obras
+  
+- work.list.php
+  Código de ejemplo para listar las obras registradas en tu cuenta Safe Creative
+	
+	
+UTILIZACIÓN
+-----------
+
+Este wrapper incluye tres métodos principales para llamar a componentes de la API Safe Creative:
+
+call($params, $apiUrl)
+ Método general para llamar a la API
+  $params: array de pares nombre-valor o cadena codificada como URL con los parámetros de la llamada API
+  $apiUrl: URL del servidor API. Por defecto, usa la constante API_URL definida en SafeCreativeAPI.config.*.php
+
+callSigned($params, $ztime, $nonceKey, $privateKey, $apiUrl)
+ Para llamar a componentes API que requieren firma (signature)
+  $params: array de pares nombre-valor con los parámetros de la llamada API.
+  $ztime: si es true, se incluye el valor ztime del servidor API en la llamada. Por defecto, false.
+  $nonceKey: si es true, se recupera una nonceKey del servidor y se incluye en la llamada. 
+             Por defecto, false.
+  $privateKey: clave privada que se utilizará para firmar la llamada.
+  $apiUrl: URL del servidor API. Por defecto, usa la constante API_URL definida en SafeCreativeAPI.config.*.php
+ 
+search($params, $apiUrl)
+ Sinónimo de call(), pero $apiUrl utiliza por defecto el servidor de búsquedas, en lugar del servidor API principal.
+
+Todos estos métodos devuelven la respuesta de la API como un objeto.
+
+En general el parámetro $params se debe construir así:
+$params = array(
+		"component" => "component.name",
+		"paramName1" => paramValue1
+		...
+	);
+Como se muestra, el componente API al que se llama está incluido como un parámetro más del array $params.
+No es necesario incluir los parámetros ztime, nonceKey y signature en el array $params,
+ya que estos parámetros se generan automáticamente al utilizar callSigned().
+
+
+Otros métodos incluidos en el wrapper:
+
+getManageAuthkeyUrl($authKey,$privateKey,$authKeyLevel = ACCESS_LEVEL_MANAGE)
+ Devuelve la URL a donde se debe redirigir al usuario para que autorice una authKey.
+  $authKey: authKey que se quiere autorizar
+  $privateKey: clave privada asociada a la authKey
+  $authKeyLevel: nivel de confianza solicitado para la authKey 
+                 (debe ser una de las constantes ACCESS_LEVEL_GET, ACCESS_LEVEL_ADD o ACCESS_LEVEL_MANAGE)
+                 
+isAuthorized($authKey)
+ Devuelve si la authKey ha sido ya autorizada por un usuario.
+ 
+getZTime()
+ Devuelve el valor de ztime del servidor API.
+
+getAuthKeyState($authKey)
+ Devuelve el estado completo de la authKey, llamando a authkey.state
+
+getNonceKey($authKey)
+ Solicita una nonceKey asociada a la $authKey
+
+signParams($params, $privateKey)
+ Calcula la firma a incluir en una llamada para los parámtros especificados
+ y devuelve la cadena completa a utilizar en la llamada a la API.
+
+
+
+EJEMPLOS
+--------
+
+Para ejecutar los ejemplos sólo necesitas copiarlos en un servidor web con intérprete PHP.
+
+Antes de usar los ejemplos, debes crear una clave de API visitando la URL:
+http://arena.safecreative.org/new-api-key
+
+Copia los valores de clave compartida (sharedKey) y privada (privateKey) 
+en el archivo SafeCreativeAPI.config.arena.php:
+ define(PRIVATE_KEY,"your-private-key");
+ define(SHARED_KEY,"your-shared-key");
+
+Recomendamos ejecutar los ejemplos en el orden siguiente:
+
+simple.search.php
+ Este es el ejemplo más simple. 
+ Para las operaciones de búsqueda no se necesita una sharedKey, así que el ejemplo funciona directamente.
+ 
+simple.register.php
+ Una vez que hayas definido una sharedKey en el archivo de configuración podrás ejecutar este ejemplo.
+ La primera vez que lo ejecutes, solicitará y te mostrará una nueva authKey con su clave privada.
+ Debes copiar estos valores en el archivo SafeCreativeAPI.config.arena.php:
+  define(AUTH_PRIVATE_KEY,"your-auth-private-key");
+  define(AUTH_KEY,"your-auth-key"); 
+  
+ También debes visitar el enlace generado para autorizar a la aplicación 
+ para que use tu cuenta de Safe Creative (arena)
+ 
+ Una vez que hayas hecho todo esto, puedes ejecutar el ejemplo de nuevo.
+ Esta vez registrará una obra titulada "El Quijote" con el texto "En un lugar de la mancha.."
+ 
+ En una aplicación real, las claves de autorización y sus claves privadas se deberían almacenar 
+ en una base de datos o similar. No se deben utilizar las constantes de configuración, 
+ ya que sólo permitirían utilizar la aplicación a una única persona.
+ 
+work.list.php
+ Para que funcione este ejemplo, debes tener definida una authKey en el fichero de configuración.
+ Este ejemplo muestra una lista con las obras registradas en tu cuenta Safe Creative (arena).
+
+
+Todos estos ejemplos están preparados para trabajar con el entorno de pruebas de Safe Creative
+que se encuentra en http://arena.safecreative.org
+
+No se deben ejecutar ejemplos ni pruebas de aplicación en los servidores principales de Safe Creative,
+ya que se pueden generar registros de obra ficticios.
+
+
