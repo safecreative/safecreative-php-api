@@ -7,4 +7,6 @@ define("PRIVATE_KEY","");
 define("SHARED_KEY","");
 define("AUTH_PRIVATE_KEY","");
 define("AUTH_KEY","");
+//Uncomment to enable debug messages:
+//define("DEBUG","");
 ?>

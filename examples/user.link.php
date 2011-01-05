@@ -40,27 +40,27 @@ function createAuthKeysAndShowAuthURL() {
 	msg("<a href=\"$url\" target=\"_new\">Authorize</a>");
 }
 
+//Warn this example requires PARTNER level!!
 
-//Simple register example:
 if(isAuthorized()) {
-	//Simple text register
+	//User link example:
 	$params = array(
-		"component" => "work.register",
-		"debug-component" => "signature.analysis",
-		"authkey" => AUTH_KEY,
-		"title" => "El Quijote",
-		"text" => "En un lugar de la mancha..",
-		"worktype" => "article"
+		"component" => "user.link",
+		"sharedkey" => SHARED_KEY,
+		"level" => ACCESS_LEVEL_MANAGE,
+		"mail" => "user@mailhost.com",
+		"firstName" => "User first name",
+		"lastName" => "User last name"
 	);
-	$result = callSigned($params,true,true,AUTH_PRIVATE_KEY);
-	if($result->code) {
-		die("Work registered with code ".$result->code);
+	$result = callSigned($params,true);
+	if($result->usercode) {
+		msg("user auth key:".$result->authkey);
+		msg("user auth private key:".$result->privatekey);
+		die("User registered with code ".$result->usercode);
 	} else {
 		debug($result);
-		die("Failed registration: ".$result->errorMessage);
+		die("Failed: ".$result->errorMessage);
 	}
 } else {
 	createAuthKeysAndShowAuthURL();
-}
-
-?>
+}?>
