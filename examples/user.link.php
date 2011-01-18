@@ -1,6 +1,6 @@
 <?php
 /*
-	Copyright 2010 Safe Creative
+	Copyright 2010-2011 Safe Creative
 
 	This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,47 +20,25 @@
 include("../SafeCreativeAPI.config.arena.php");
 //Production config (Api key must be approved by Safe Creative to become active!)
 //include("../SafeCreativeAPI.config.production.php");
-
 include("../SafeCreativeAPI.inc.php");
 
-function createAuthKeysAndShowAuthURL() {
-	//Create auth keys
-	$params = array(
-		"component" => "authkey.create",
-		"sharedkey" => SHARED_KEY
-	);
-	$result = callSigned($params,true,false);
-	msg("This auth key and private key have just been generated");
-	msg("You should authorize them by following the link");
-	msg("and copy its values in SafeCreativeAPI.config.arena.php for this sample to work");
-	msg("AUTH_KEY=" . $result->authkey);
-	msg("AUTH_PRIVATE_KEY=" . $result->privatekey);
-	//and build auth url to authorize them
-	$url = getManageAuthkeyUrl($result->authkey,$result->privatekey,ACCESS_LEVEL_ADD);
-	msg("<a href=\"$url\" target=\"_new\">Authorize</a>");
-}
-
+//User link example:
 //Warn this example requires PARTNER level!!
-
-if(isAuthorized()) {
-	//User link example:
-	$params = array(
-		"component" => "user.link",
-		"sharedkey" => SHARED_KEY,
-		"level" => ACCESS_LEVEL_MANAGE,
-		"mail" => "user@mailhost.com",
-		"firstName" => "User first name",
-		"lastName" => "User last name"
-	);
-	$result = callSigned($params,true);
-	if($result->usercode) {
-		msg("user auth key:".$result->authkey);
-		msg("user auth private key:".$result->privatekey);
-		die("User registered with code ".$result->usercode);
-	} else {
-		debug($result);
-		die("Failed: ".$result->errorMessage);
-	}
+$params = array(
+	"component" => "user.link",
+	"sharedkey" => SHARED_KEY,
+	"level" => ACCESS_LEVEL_MANAGE,
+	"mail" => "user@mailhost.com",
+	"firstName" => "User first name",
+	"lastName" => "User last name"
+);
+$result = callSigned($params,true);
+if($result->usercode) {
+	msg("user auth key:".$result->authkey);
+	msg("user auth private key:".$result->privatekey);
+	die("User registered with code ".$result->usercode);
 } else {
-	createAuthKeysAndShowAuthURL();
-}?>
+	debug($result);
+	die("Failed: ".$result->errorMessage);
+}
+?>
